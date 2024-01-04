@@ -135,7 +135,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
             //.setModelAspectRatio(16.0 / 9.0)
 
             .build();
-
+        
         // Create the vision portal by using a builder.
         VisionPortal.Builder builder = new VisionPortal.Builder();
 

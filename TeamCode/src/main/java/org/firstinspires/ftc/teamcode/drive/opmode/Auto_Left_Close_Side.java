@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
+//import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -20,7 +22,9 @@ import java.util.List;
      * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
      */
 
-@TeleOp(name = "Auto Left Close Side", group = "Autonomous")
+
+@Disabled
+@Autonomous(name = "Auto Left Close Side", preselectTeleOp = "MightyHawks_RR")
 public class Auto_Left_Close_Side extends LinearOpMode {
 
         private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
@@ -29,6 +33,16 @@ public class Auto_Left_Close_Side extends LinearOpMode {
          * The variable to store our instance of the TensorFlow Object Detection processor.
          */
         private TfodProcessor tfod;
+    // TFOD_MODEL_ASSET points to a model file stored in the project Asset location,
+    // this is only used for Android Studio when using models in Assets.
+    private static final String TFOD_MODEL_ASSET = "MyModelStoredAsAsset.tflite";
+    // TFOD_MODEL_FILE points to a model file stored onboard the Robot Controller's storage,
+    // this is used when uploading models directly to the RC using the model upload interface.
+    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/myCustomModel.tflite";
+    // Define the labels recognized in the model for TFOD (must be in training order!)
+    private static final String[] LABELS = {
+            "Pixel",
+    };
 
         /**
          * The variable to store our instance of the vision portal.
@@ -39,6 +53,12 @@ public class Auto_Left_Close_Side extends LinearOpMode {
         public void runOpMode() {
 
             initTfod();
+            int timeBack;
+            double ticks_per_revolution;
+            double wheel_circumference;
+            double ticks_per_inch;
+            int ticks_to_destination;
+            int distance_to_travel;
 
             // Wait for the DS start button to be touched.
             telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
@@ -83,7 +103,8 @@ public class Auto_Left_Close_Side extends LinearOpMode {
             // Create the vision portal the easy way.
             if (USE_WEBCAM) {
                 visionPortal = VisionPortal.easyCreateWithDefaults(
-                        hardwareMap.get(WebcamName.class, "Webcam 1"), tfod);
+                        hardwareMap.get(WebcamName.class, "Webcam 1"),
+                        tfod);
             } else {
                 visionPortal = VisionPortal.easyCreateWithDefaults(
                         BuiltinCameraDirection.BACK, tfod);
