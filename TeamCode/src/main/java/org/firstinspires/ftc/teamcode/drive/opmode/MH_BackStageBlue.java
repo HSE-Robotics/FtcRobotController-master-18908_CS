@@ -312,7 +312,7 @@ public class MH_BackStageBlue extends LinearOpMode {
                 drive.followTrajectorySequence(untitled0);
 
                 RightServo.setPower(1.0);
-                LeftServo.setPower(1.0);
+                LeftServo.setPower(-1.0);
                 sleep(2500);
                 ArmServo.setPosition(0.75);
                 RightServo.setPower(0.0);
