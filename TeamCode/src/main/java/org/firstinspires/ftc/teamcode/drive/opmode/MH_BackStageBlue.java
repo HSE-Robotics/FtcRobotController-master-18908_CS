@@ -295,22 +295,53 @@ public class MH_BackStageBlue extends LinearOpMode {
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
             telemetry.addData("- PositionCube", "%s", cubePosition);
 
-            if((x > 250 && x < 300) && (y>100 && y < 180)){
+
+            if((x > 200 && x < 310) && (y>100 && y < 220)){
                 int initPos;
                 objDetected = true;
                 initPos = ArmMotor.getCurrentPosition();
                 cubePosition = "Center";
-                TrajectorySequence untitled0 = drive.trajectorySequenceBuilder(new Pose2d(12.06, 62.47, Math.toRadians(270.00)))
-                        .lineTo(new Vector2d(12.35, 31.85))
-                        .lineToConstantHeading(new Vector2d(58.00, 30.00))
-                        .addSpatialMarker(new Vector2d(45.00, 30.00),()->{
-                            ArmMotor.setTargetPosition(initialPosition - 300);
-                            ArmServo.setPosition(0.5);
-                        })
-                        .build();
-                drive.setPoseEstimate(untitled0.start());
-                drive.followTrajectorySequence(untitled0);
+                ArmMotor.setTargetPosition(initialPosition + 1163);
+                ArmMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                ArmMotor.setPower(0.7);
 
+                telemetry.addData("Target Position:", "%s", initialPosition + 150);
+                telemetry.update();
+                sleep(150);
+
+                TrajectorySequence untitled1 = drive.trajectorySequenceBuilder(new Pose2d(12.06, 62.47, Math.toRadians(270.00)))
+                        .lineTo(new Vector2d(12.06, 24.50))
+                        .lineTo(new Vector2d(12.06, 45.00))
+                        .lineToLinearHeading(new Pose2d(58.00, 25.00, Math.toRadians(0.00)))
+                         .addDisplacementMarker(() -> {
+                             // This marker runs after the first splineTo()
+                             ArmServo.setPosition(0.65);
+                             ArmMotor.setTargetPosition(initialPosition + 800);
+                             ArmMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                             ArmMotor.setPower(0.7);
+                             sleep(150);
+                             // Run your action in here!
+                         })
+                         .lineToLinearHeading(new Pose2d(69.50, 26.00, Math.toRadians(270.00)))
+                        .addDisplacementMarker(() -> {
+                            // This marker runs after the first splineTo()
+                            RightServo.setPower(1.0);
+                            LeftServo.setPower(-1.0);
+                            // Run your action in here!
+                            sleep(500);
+                            RightServo.setPower(0.0);
+                            LeftServo.setPower(0.0);
+                            ArmServo.setPosition(1);
+                             sleep(150);
+                        })
+                        .lineTo(new Vector2d(36.47,25.00))
+                         .lineToLinearHeading(new Pose2d(36.47, 48.75, Math.toRadians(115.00)))
+                         .lineToLinearHeading(new Pose2d(63.46, 63.06, Math.toRadians(180.00)))
+                        .build();
+                drive.setPoseEstimate(untitled1.start());
+                drive.followTrajectorySequence(untitled1);
+                armDown(initialPosition);
+/*
                 RightServo.setPower(1.0);
                 LeftServo.setPower(-1.0);
                 sleep(2500);
@@ -324,7 +355,7 @@ public class MH_BackStageBlue extends LinearOpMode {
                         .build();
                 drive.setPoseEstimate(untitled1.start());
                 drive.followTrajectorySequence(untitled1);
-/*
+
                 TrajectorySequence seq1 = drive.trajectorySequenceBuilder(startingPose)
                         .lineTo(new Vector2d(16,30))
                         .lineTo(new Vector2d(16, 25))
@@ -372,13 +403,14 @@ public class MH_BackStageBlue extends LinearOpMode {
         ArmMotor.setPower(1);
     }
 
-    private void armDown(){
-        ArmMotor.setTargetPosition(ArmMotor.getCurrentPosition() - 615);
+    private void armDown(int initialPosition){
+        ArmMotor.setTargetPosition(initialPosition);
         ArmMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         ArmMotor.setPower(1);
         while (ArmMotor.isBusy()) {
 
         }
+        ArmMotor.setPower(0.0);
     }
     /**
      * Drive Backwards / Forward
