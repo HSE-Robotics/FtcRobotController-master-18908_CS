@@ -154,22 +154,7 @@ public class MH_BackStageBlue extends LinearOpMode {
                 ArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 ArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 ArmMotor.setDirection(DcMotor.Direction.REVERSE);
-                /*
-                BL.setDirection(DcMotor.Direction.REVERSE);
-                FL.setDirection(DcMotor.Direction.REVERSE);
 
-                // Using encoders to ensure driving is straight
-                BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-                // Motors will brake on stopRobot function
-                BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                */
 
 
                 telemetryTfod();
