@@ -31,15 +31,15 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
     public static double WHEEL_RADIUS = 0.945; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
-    public static double LATERAL_DISTANCE = 8; // in; distance between the left and right wheels
-    public static double FORWARD_OFFSET = 5.75; // in; offset of the lateral wheel
+    public static double LATERAL_DISTANCE = 7.45; //Measured=7.25 - og=8 in; distance between the left and right wheels
+    public static double FORWARD_OFFSET = 5.25; // og=5.75in; offset of the lateral wheel
 
     private final Encoder leftEncoder;
     private final Encoder rightEncoder;
     private final Encoder frontEncoder;
 
-    public static double X_MULTIPLIER = 1; // Multiplier in the X direction
-    public static double Y_MULTIPLIER = 1; // Multiplier in the Y direction
+    public static double X_MULTIPLIER = 1.005019; // Multiplier in the X direction
+    public static double Y_MULTIPLIER = 1.015091; // Multiplier in the Y direction
 
     private final List<Integer> lastEncPositions;
     private final List<Integer> lastEncVels;
@@ -60,7 +60,7 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
 
         // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
         leftEncoder.setDirection(Encoder.Direction.REVERSE);
-        frontEncoder.setDirection(Encoder.Direction.REVERSE);
+        //frontEncoder.setDirection(Encoder.Direction.REVERSE);
     }
 
     public static double encoderTicksToInches(double ticks) {
@@ -99,9 +99,9 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
         lastEncVels.add(frontVel);
 
         return Arrays.asList(
-                encoderTicksToInches(leftVel),
-                encoderTicksToInches(rightVel),
-                encoderTicksToInches(frontVel)
+                encoderTicksToInches(leftVel) * X_MULTIPLIER,
+                encoderTicksToInches(rightVel) * X_MULTIPLIER,
+                encoderTicksToInches(frontVel) * Y_MULTIPLIER
         );
     }
 }

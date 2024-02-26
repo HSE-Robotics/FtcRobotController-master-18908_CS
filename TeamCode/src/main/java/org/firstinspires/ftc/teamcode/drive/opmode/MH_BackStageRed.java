@@ -28,43 +28,27 @@
  */
 
 package org.firstinspires.ftc.teamcode.drive.opmode;
-import androidx.annotation.NonNull;
-
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.path.heading.ConstantInterpolator;
-import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import java.util.List;
-import org.firstinspires.ftc.robotcore.external.JavaUtil;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import java.lang.String;
-import java.util.List;
-
-import org.firstinspires.ftc.teamcode.drive.DriveConstants;
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-
-
-
-
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
+
+import kotlin.math.UMathKt;
 
 /*
  * This OpMode illustrates the basics of TensorFlow Object Detection,
@@ -73,9 +57,9 @@ import java.util.List;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
-@Autonomous(name = "Blue Back Stage", group = "Concept")
+@Autonomous(name = "Red Back Stage", group = "Concept")
 
-public class MH_BackStageBlue extends LinearOpMode {
+public class MH_BackStageRed extends LinearOpMode {
     private DcMotor BR;
     private DcMotor FR;
     private DcMotor FL;
@@ -84,8 +68,6 @@ public class MH_BackStageBlue extends LinearOpMode {
     private CRServo RightServo;
     private CRServo LeftServo;
     private Servo ArmServo;
-    private DcMotor leftSlider;
-    private DcMotor Rightslider;
     int Initial_Position;
     ElapsedTime timelapse;
     double ticks_per_revolution;
@@ -102,10 +84,10 @@ public class MH_BackStageBlue extends LinearOpMode {
     //private static final String TFOD_MODEL_ASSET = "MyModelStoredAsAsset.tflite";
     // TFOD_MODEL_FILE points to a model file stored onboard the Robot Controller's storage,
     // this is used when uploading models directly to the RC using the model upload interface.
-    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/BlueCone.tflite";
+    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/RedCone.tflite";
     // Define the labels recognized in the model for TFOD (must be in training order!)
     private static final String[] LABELS = {
-            "azul cone",
+            "rojo cone",
     };
 
     /**
@@ -134,8 +116,6 @@ public class MH_BackStageBlue extends LinearOpMode {
         RightServo = hardwareMap.get(CRServo.class, "leftTire");
         LeftServo = hardwareMap.get(CRServo.class, "rightTire");
         ArmServo = hardwareMap.get(Servo.class, "Wrist");
-        leftSlider = hardwareMap.get(DcMotor.class,"leftSlider");
-        Rightslider = hardwareMap.get(DcMotor.class, "Rightslider");
 
         // Wait for the DS start button to be touched.
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
@@ -158,7 +138,6 @@ public class MH_BackStageBlue extends LinearOpMode {
                 ArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 ArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 ArmMotor.setDirection(DcMotor.Direction.REVERSE);
-                Rightslider.setDirection(DcMotor.Direction.REVERSE);
 
 
                 telemetryTfod();
@@ -298,10 +277,10 @@ public class MH_BackStageBlue extends LinearOpMode {
                 telemetry.update();
                 sleep(150);
 
-                TrajectorySequence untitled1 = drive.trajectorySequenceBuilder(new Pose2d(12.06, 62.47, Math.toRadians(270.00)))
-                        .lineTo(new Vector2d(12.06, 30.50))
-                        .lineTo(new Vector2d(12.06, 45.00))
-                        .lineToLinearHeading(new Pose2d(54.6, 30.00, Math.toRadians(0.00)))
+                TrajectorySequence untitled1 = drive.trajectorySequenceBuilder(new Pose2d(10.50, -62.47, Math.toRadians(95.00)))
+                        .lineToLinearHeading(new Pose2d(10.50, -30.00,Math.toRadians(90.00)))
+                        .lineTo(new Vector2d(10.50, -45.00))
+                        .lineToLinearHeading(new Pose2d(49.50, -45.00, Math.toRadians(0.00)))
                          .addDisplacementMarker(() -> {
                              // This marker runs after the first splineTo()
                              ArmServo.setPosition(0.65);
@@ -322,10 +301,11 @@ public class MH_BackStageBlue extends LinearOpMode {
                             ArmServo.setPosition(1);
                              sleep(150);
                         })
-                        .lineTo(new Vector2d(15.50,25.00))
-                         .lineTo(new Vector2d(12.00, 25.00))
-                         .lineTo(new Vector2d(12.00, 48.00))
-                        .lineTo(new Vector2d(26.00, 48.00))
+                        .lineToLinearHeading(new Pose2d(48.50, -45.00, Math.toRadians(0.00)))
+                        //.lineTo(new Vector2d(15.50,-34.00))
+                         //.lineTo(new Vector2d(12.00, -34.00))
+                         //.lineTo(new Vector2d(12.00, -63.00))
+                        .lineTo(new Vector2d(35.00, -64.00))
                         //.lineToLinearHeading(new Pose2d(60.46, 63.06, Math.toRadians(180.00)))
                         .build();
                 drive.setPoseEstimate(untitled1.start());
@@ -368,12 +348,16 @@ public class MH_BackStageBlue extends LinearOpMode {
                 telemetry.update();
                 sleep(150);
 
-                TrajectorySequence untitled2 = drive.trajectorySequenceBuilder(new Pose2d(12.06, 62.47, Math.toRadians(270.00)))
+                TrajectorySequence untitled2 = drive.trajectorySequenceBuilder(new Pose2d(10.06, -62.47, Math.toRadians(95.00)))
                         //.lineToLinearHeading(new Pose2d(12.06, 29.75, Math.toRadians(225.00))
-                        .lineTo(new Vector2d(12.06, 55.00))
-                        .lineToLinearHeading(new Pose2d(22.06, 28.75, Math.toRadians(315.00)))
-                        .lineToLinearHeading(new Pose2d(18.06,47.00, Math.toRadians(270.00)))
-                        .lineToLinearHeading(new Pose2d(55.05, 30.75, Math.toRadians(0.00)))
+                        .lineToLinearHeading(new Pose2d(10.06, -42.00, Math.toRadians(90.00)))
+                        .lineToLinearHeading(new Pose2d(1.00,-37.00,Math.toRadians(180.00)))
+                        .lineTo(new Vector2d(10.00, -37.00))
+                        .lineToLinearHeading(new Pose2d(15.00,-37.00,Math.toRadians(0.00)))
+                        .lineToLinearHeading(new Pose2d(39.00,-37.00, Math.toRadians(0.00)))
+                        //.lineToLinearHeading(new Pose2d(25.06, 29.75, Math.toRadians(315.00)))
+                        //.lineToLinearHeading(new Pose2d(18.06,47.00, Math.toRadians(270.00)))
+                        //.lineToLinearHeading(new Pose2d(58.05, 30.75, Math.toRadians(0.00)))
                         .addDisplacementMarker(() -> {
                             // This marker runs after the first splineTo()
                             ArmServo.setPosition(0.65);
@@ -394,11 +378,11 @@ public class MH_BackStageBlue extends LinearOpMode {
                             ArmServo.setPosition(1);
                             sleep(150);
                         })
-                        .lineTo(new Vector2d(15.50,25.00))
-                        .lineTo(new Vector2d(12.00, 25.00))
-                        .lineTo(new Vector2d(12.00, 43.00))
-                        .lineTo(new Vector2d(20.50, 43.00))
-                        //.lineToLinearHeading(new Pose2d(60.46, 63.06, Math.toRadians(180.00)))
+                        //.lineTo(new Vector2d(15.50,25.00))
+                        //.lineTo(new Vector2d(12.00, 25.00))
+                        //.lineTo(new Vector2d(12.00, 43.00))
+                        .lineTo(new Vector2d(30.00, -37.00))
+                        .lineToLinearHeading(new Pose2d(35.00, -58.06, Math.toRadians(0.00)))
                         .build();
                 drive.setPoseEstimate(untitled2.start());
                 drive.followTrajectorySequence(untitled2);
@@ -411,8 +395,8 @@ public class MH_BackStageBlue extends LinearOpMode {
                 int initPos;
                 objDetected = true;
                 initPos = ArmMotor.getCurrentPosition();
-                cubePosition = "Right";
-                ArmMotor.setTargetPosition(initialPosition + 550);
+                cubePosition = "Center";
+                ArmMotor.setTargetPosition(initialPosition + 1163);
                 ArmMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 ArmMotor.setPower(0.7);
 
@@ -420,17 +404,16 @@ public class MH_BackStageBlue extends LinearOpMode {
                 telemetry.update();
                 sleep(150);
 
-                TrajectorySequence untitled1 = drive.trajectorySequenceBuilder(new Pose2d(12.06, 62.47, Math.toRadians(270.00)))
-                        .lineTo(new Vector2d(12.06, 48.00))
-                        .lineToLinearHeading(new Pose2d(12.06,37.00, Math.toRadians(180.00)))
-                        .lineTo(new Vector2d(0.00, 36.00))
-                        .lineTo(new Vector2d(12.00, 36.00))
-                        .lineToLinearHeading(new Pose2d(16.00,36.00, Math.toRadians(0.00)))
-                        .lineToLinearHeading(new Pose2d(40.00, 31.50, Math.toRadians(0.00)))
+                TrajectorySequence untitled1 = drive.trajectorySequenceBuilder(new Pose2d(10.50, -62.47, Math.toRadians(95.00)))
+                        .lineToLinearHeading(new Pose2d(20.00, -31.00, Math.toRadians(45.00)))
+                        .lineToLinearHeading(new Pose2d(12.00, -44.00, Math.toRadians(90.00)))
+                        .lineToLinearHeading(new Pose2d(52.00,-57.00, Math.toRadians(0.00)))
+                        //.lineTo(new Vector2d(10.50, -45.00))
+                        //.lineToLinearHeading(new Pose2d(49.00, -45.00, Math.toRadians(0.00)))
                         .addDisplacementMarker(() -> {
                             // This marker runs after the first splineTo()
                             ArmServo.setPosition(0.65);
-                            //ArmMotor.setTargetPosition(initialPosition + 800);
+                            ArmMotor.setTargetPosition(initialPosition + 800);
                             ArmMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             ArmMotor.setPower(0.7);
                             sleep(250);
@@ -447,12 +430,12 @@ public class MH_BackStageBlue extends LinearOpMode {
                             ArmServo.setPosition(1);
                             sleep(150);
                         })
-                        .lineToLinearHeading(new Pose2d(15.00, 26.00, Math.toRadians(0.00)))
-                        .lineTo(new Vector2d(15.50,25.00))
-                        .lineTo(new Vector2d(12.00, 25.00))
-                        .lineTo(new Vector2d(12.00, 55.00))
-                        .lineTo(new Vector2d(25.00, 55.00))
-                        //.lineToLinearHeading(new Pose2d(60.46, 63.06, Math.toRadians(180.00)))
+                        .lineToLinearHeading(new Pose2d(49.00, -55.00, Math.toRadians(0.00)))
+                        //.lineTo(new Vector2d(15.50,-34.00))
+                        //.lineTo(new Vector2d(12.00, -34.00))
+                        //.lineTo(new Vector2d(12.00, -63.00))
+                        .lineTo(new Vector2d(35.00, -69.00))
+                        //.lineToLinearHeading(new Pose2d(60.46, 63.06, Math.toRadians(180.00)))*/
                         .build();
                 drive.setPoseEstimate(untitled1.start());
                 drive.followTrajectorySequence(untitled1);
