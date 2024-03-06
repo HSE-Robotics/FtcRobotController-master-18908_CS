@@ -51,12 +51,12 @@ public class MightyHawks_RR extends LinearOpMode {
 
 
         double sliderSpeed;
+        double armSpeed;
         double speed;
         int initialPosition, initialPosition1, initialPositionForeArmMotor;
 
 
         SliderMotor = hardwareMap.get(DcMotor.class, "SliderMotor");
-        //Rightslider = hardwareMap.get(DcMotor.class, "Rightslider");
         ArmRotator = hardwareMap.get(DcMotor.class, "ArmRotator");
         RServo = hardwareMap.get(Servo.class, "RServo");
         LServo = hardwareMap.get(Servo.class, "LServo");
@@ -64,15 +64,19 @@ public class MightyHawks_RR extends LinearOpMode {
 
         // Put initialization blocks here.
         sliderSpeed = 0.5;
-        waitForStart();
+        armSpeed = 0.1;
         Wrist.setPosition(0.45);
         LServo.setDirection(Servo.Direction.REVERSE);
         RServo.setPosition(0.0);
         LServo.setPosition(0.0);
+        waitForStart();
 
         if (opModeIsActive()) {
+            initialPositionForeArmMotor = ArmRotator.getCurrentPosition();
 
             speed = 0.7;
+            ArmRotator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
             SliderMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             ArmRotator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -81,11 +85,6 @@ public class MightyHawks_RR extends LinearOpMode {
 
             //ArmRotator.setDirection(DcMotor.Direction.REVERSE);
             SliderMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
-            initialPositionForeArmMotor = ArmRotator.getCurrentPosition();
-
-
-
 
             while (opModeIsActive() && !isStopRequested()) {
 
@@ -118,6 +117,8 @@ public class MightyHawks_RR extends LinearOpMode {
                 }
 
                 if (gamepad1.cross) {
+                    AimForPixels(sliderSpeed, initialPositionForeArmMotor);
+                    /*
                     ArmRotator.setTargetPosition(initialPositionForeArmMotor);
                     ArmRotator.setMode((DcMotor.RunMode.RUN_TO_POSITION));
                     ArmRotator.setPower(0.15);
@@ -132,6 +133,8 @@ public class MightyHawks_RR extends LinearOpMode {
                             break;
                         }
                     }
+
+                     */
 
                 }
 
@@ -177,62 +180,36 @@ public class MightyHawks_RR extends LinearOpMode {
     public void Hanging(double sliderSpeed, int initialPositionForeArmMotor, int initialPosition1, int initialPosition){
         telemetry.addData("starting Pos.", SliderMotor.getCurrentPosition());
         telemetry.addData("Initial Pos", initialPositionForeArmMotor);
-        //telemetry.addData("starting Pos1.", Rightslider.getCurrentPosition());
 
         SliderMotor.setTargetPosition(initialPosition1 + 5200);
         SliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         SliderMotor.setPower(sliderSpeed);
-        //Rightslider.setTargetPosition(initialPosition + 5200);
-        //Rightslider.setMode((DcMotor.RunMode.RUN_TO_POSITION));
-        //Rightslider.setPower(sliderSpeed);
+
         telemetry.addData("LeftSlider Target",SliderMotor.getTargetPosition());
-        //telemetry.addData("RightSlider Target",Rightslider.getTargetPosition());
         telemetry.update();
         while(SliderMotor.isBusy()){
 
         }
-        //Set Slider Servos to position
-        //LeftSliderServo.setPosition(0.0);
-        //RightsliderServo.setPosition(0.0);
-     /*   sleep(1500);
-
-        //Set ForeArmServo to position
-        ForeArmMotor.setTargetPosition(initialPositionForeArmMotor + 64);
-        ForeArmMotor.setMode((DcMotor.RunMode.RUN_TO_POSITION));
-        ForeArmMotor.setPower(0.25);
-        while(ForeArmMotor.isBusy()){}
-        claw.setPosition(1.0);*/
         manoState= ManoState.MANO_HANGING;
     }
-    public void Aiming(double sliderSpeed, int initialPositionForeArmMotor, int initialPosition1, int initialPosition){
-        telemetry.addData("starting Pos.", SliderMotor.getCurrentPosition());
-        telemetry.addData("spin", ArmRotator.getCurrentPosition());
-        //telemetry.addData("starting Pos1.", Rightslider.getCurrentPosition());
+    public void AimForPixels(double armSpeed, int initialPositionForeArmMotor){
+        telemetry.addData("Current Pos.", ArmRotator.getCurrentPosition());
+        telemetry.addData("TargetPosition", initialPositionForeArmMotor);
 
-        SliderMotor.setTargetPosition(initialPosition1 + 2827);
+        SliderMotor.setTargetPosition(initialPositionForeArmMotor);
         SliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        SliderMotor.setPower(sliderSpeed);
-        //Rightslider.setTargetPosition(initialPosition + 2827);
-        //Rightslider.setMode((DcMotor.RunMode.RUN_TO_POSITION));
-        //Rightslider.setPower(sliderSpeed);
-        telemetry.addData("LeftSlider Target",SliderMotor.getTargetPosition());
-        //telemetry.addData("RightSlider Target",Rightslider.getTargetPosition());
-        telemetry.update();
-        //while(Rightslider.isBusy() && leftSlider.isBusy()){
-
+        SliderMotor.setPower(armSpeed);
+        while(ArmRotator.isBusy()){
+            if(gamepad1.ps){
+                ArmRotator.setPower(0.0);
+                break;
+            }
         }
-        //Set Slider Servos to position
-        //LeftSliderServo.setPosition(0.0);
-        //RightsliderServo.setPosition(0.0);
-     /*   sleep(1500);
+        telemetry.update();
 
-        //Set ForeArmServo to position
-        ForeArmMotor.setTargetPosition(initialPositionForeArmMotor + 64);
-        ForeArmMotor.setMode((DcMotor.RunMode.RUN_TO_POSITION));
-        ForeArmMotor.setPower(0.25);
-        while(ForeArmMotor.isBusy()){}
-        claw.setPosition(1.0);*/
-        //manoState= ManoState.MANO_AIM;
+
+    }
+
 
     public void ForeArmRight(){
 
@@ -261,16 +238,12 @@ public class MightyHawks_RR extends LinearOpMode {
         SliderMotor.setTargetPosition(SliderMotor.getCurrentPosition() + 100);
         SliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         SliderMotor.setPower(sliderSpeed);
-        //Rightslider.setTargetPosition(Rightslider.getCurrentPosition() + 100);
-        //Rightslider.setMode((DcMotor.RunMode.RUN_TO_POSITION));
-        //Rightslider.setPower(sliderSpeed);
         telemetry.addData("LeftSlider Target",SliderMotor.getTargetPosition());
         //telemetry.addData("RightSlider Target",Rightslider.getTargetPosition());
         telemetry.update();
-        //while(Rightslider.isBusy() && leftSlider.isBusy()){
 
-        }
-    //}
+
+    }
     public void SlidersDown(double sliderSpeed){
         telemetry.addData("starting Pos.", SliderMotor.getCurrentPosition());
         //telemetry.addData("starting Pos1.", Rightslider.getCurrentPosition());
@@ -284,8 +257,8 @@ public class MightyHawks_RR extends LinearOpMode {
         telemetry.addData("LeftSlider Target",SliderMotor.getTargetPosition());
         //telemetry.addData("RightSlider Target",Rightslider.getTargetPosition());
         telemetry.update();
-        //while(Rightslider.isBusy() && leftSlider.isBusy()){
 
         }
     }
-//}
+
+
