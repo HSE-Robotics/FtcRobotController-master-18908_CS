@@ -2,6 +2,8 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
 
+import android.transition.Slide;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -23,7 +25,7 @@ public class MightyHawks_RR extends LinearOpMode {
    // private CRServo leftWheel;
     //private CRServo rightWheel;
     private DcMotor ArmRotator;
-    //private Servo drone_launcher; // DroneServo
+    private Servo drone_launcher; // DroneServo
     private DcMotor SliderMotor;
 
     private Servo RServo;
@@ -53,7 +55,7 @@ public class MightyHawks_RR extends LinearOpMode {
         double sliderSpeed;
         double armSpeed;
         double speed;
-        boolean leftServoOpen, rightServoOpen;
+        boolean leftServoOpen, rightServoOpen, wristLastInput, wristCurrentInput, wristPositionDown;
         int sliderInitialPosition, initialPosition1, initialPositionForeArmMotor;
 
 
@@ -62,9 +64,10 @@ public class MightyHawks_RR extends LinearOpMode {
         RServo = hardwareMap.get(Servo.class, "RServo");
         LServo = hardwareMap.get(Servo.class, "LServo");
         Wrist = hardwareMap.get(Servo.class,"Wrist");
+        drone_launcher = hardwareMap.get(Servo.class,"drone");
 
         // Put initialization blocks here.
-        sliderSpeed = 0.5;
+        sliderSpeed = 0.75;
         armSpeed = 1.0;
         Wrist.setPosition(0.45);
         LServo.setDirection(Servo.Direction.REVERSE);
@@ -72,6 +75,9 @@ public class MightyHawks_RR extends LinearOpMode {
         LServo.setPosition(0.75);
         leftServoOpen = false;
         rightServoOpen = false;
+        wristLastInput = false;
+        wristCurrentInput = false;
+        wristPositionDown = false;
         waitForStart();
 
 
@@ -79,7 +85,7 @@ public class MightyHawks_RR extends LinearOpMode {
             initialPositionForeArmMotor = ArmRotator.getCurrentPosition();
             sliderInitialPosition = SliderMotor.getCurrentPosition();
 
-            speed = 0.7;
+            speed = 0.85;
            // ArmRotator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
             SliderMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -109,10 +115,16 @@ public class MightyHawks_RR extends LinearOpMode {
                 telemetry.addData("heading", poseEstimate.getHeading());
 
 
+                if (gamepad1.options) {
+                    drone_launcher.setPosition(1.0);
+                }
                 if (gamepad1.share) {
-                    //drone_launcher.setPosition(1.0);
-                }else if (gamepad1.options) {
-                    //drone_launcher.setPosition(0.0);
+                    initialPositionForeArmMotor = ArmRotator.getCurrentPosition();
+                    sliderInitialPosition = SliderMotor.getCurrentPosition();
+                }
+
+                if (gamepad1.touchpad){
+                    Wrist.setPosition(0.0);
                 }
 
                 if (gamepad1.left_bumper) {
@@ -123,44 +135,72 @@ public class MightyHawks_RR extends LinearOpMode {
                     RServo.setPosition(.25);
                 }
                 if (gamepad1.right_trigger > 0.65){
-                    RServo.setPosition(0.5);
-                    LServo.setPosition(0.15);
+                    RServo.setPosition(0.25);
+                    LServo.setPosition(0.25);
                 }
                 if (gamepad1.left_trigger > 0.65){
                     RServo.setPosition(0.75);
-                    LServo.setPosition(0.75);
+                    LServo.setPosition(0.85);
                 }
-                if ((gamepad1.dpad_up)) {
-                   Wrist.setPosition(0.75);
-                }else if ((gamepad1.dpad_down)) {
-                    Wrist.setPosition(0.45);
+                wristLastInput = wristCurrentInput;
+                wristCurrentInput = gamepad1.triangle;
+                if ((wristLastInput && !wristCurrentInput)) {
+                    wristPositionDown = !wristPositionDown;
+                    if(wristPositionDown){
+                        Wrist.setPosition(0.75);
+                    }else{
+                        Wrist.setPosition(0.45);
+                    }
+
+                }
+                if (gamepad1.dpad_down) {
+                    SliderMotor.setTargetPosition(SliderMotor.getCurrentPosition() - 250);
+                    SliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    SliderMotor.setPower(0.35);
+
+                    while(SliderMotor.isBusy()){
+                        if(gamepad1.ps){
+                            SliderMotor.setPower(0.0);
+                            SliderMotor.setTargetPosition(SliderMotor.getCurrentPosition());
+                            SliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            SliderMotor.setPower(sliderSpeed);
+                            break;
+                        }
+                    }
+
+
+                }
+                if (gamepad1.dpad_up) {
+                    SliderMotor.setTargetPosition(SliderMotor.getCurrentPosition() + 250);
+                    SliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    SliderMotor.setPower(0.35);
+                    while(SliderMotor.isBusy()){
+                        if(gamepad1.ps){
+                            SliderMotor.setPower(0.0);
+                            SliderMotor.setTargetPosition(SliderMotor.getCurrentPosition());
+                            SliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            SliderMotor.setPower(0.25);
+                            break;
+                        }
+                    }
                 }
 
                 if (gamepad1.square) {
-                    AimForScoring(armSpeed, initialPositionForeArmMotor,3300, sliderSpeed, sliderInitialPosition, 2000);
-                    /*ArmRotator.setTargetPosition(initialPositionForeArmMotor + 3300);
-                    ArmRotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    ArmRotator.setPower(1.0);
-                    while(ArmRotator.isBusy()){
-                        if(gamepad2.ps){
-                            ArmRotator.setPower(0.0);
-                            break;
-                        }
-                    }*/
-                    //Wrist.setPosition(.25);
-                    //sleep(500);
-                    //SlidersUp(sliderSpeed, sliderInitialPosition);
-                   // SliderMotor.setTargetPosition(sliderInitialPosition + 2411);
-                   // SliderMotor.setPower(.25);
+                    AimForScoring(armSpeed, initialPositionForeArmMotor,3700, 0.35, sliderInitialPosition, 1000);
+
                 }
 
                 if (gamepad1.cross) {
-                    AimForPixels(armSpeed, initialPositionForeArmMotor);
+                    AimForPixels(armSpeed, initialPositionForeArmMotor, sliderSpeed, sliderInitialPosition);
+                }
+
+                if (gamepad1.circle) {
+                    Hanging(armSpeed, sliderSpeed,  initialPositionForeArmMotor, sliderInitialPosition);
                 }
 
 
-                if (gamepad1.dpad_right && ((ArmRotator.getCurrentPosition() + 100) < (initialPositionForeArmMotor+5000))) {
-                    ArmRotator.setTargetPosition(ArmRotator.getCurrentPosition() + 30);
+                if (gamepad1.dpad_right && ((ArmRotator.getCurrentPosition() + 250) < (initialPositionForeArmMotor+ 7000))) {
+                    ArmRotator.setTargetPosition(ArmRotator.getCurrentPosition() + 250);
                     ArmRotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     ArmRotator.setPower(0.75);
                     while(ArmRotator.isBusy()){
@@ -174,7 +214,7 @@ public class MightyHawks_RR extends LinearOpMode {
                 }
                 if (gamepad1.dpad_left) {
 
-                    ArmRotator.setTargetPosition(ArmRotator.getCurrentPosition() - 100);
+                    ArmRotator.setTargetPosition(ArmRotator.getCurrentPosition() - 250);
                     ArmRotator.setMode((DcMotor.RunMode.RUN_TO_POSITION));
                     ArmRotator.setPower(0.75);
                     while(ArmRotator.isBusy()){
@@ -188,6 +228,7 @@ public class MightyHawks_RR extends LinearOpMode {
 
 
                 telemetry.addData("starting Pos ForeArm.", initialPositionForeArmMotor);
+                telemetry.addData("starting Pos Slider.", sliderInitialPosition);
                 telemetry.addData("Current Pos ForeArm.", ArmRotator.getCurrentPosition());
                 telemetry.addData("Target Pos ForeArm.", ArmRotator.getTargetPosition());
                 telemetry.addData("Slider Pos", SliderMotor.getCurrentPosition());
@@ -200,37 +241,50 @@ public class MightyHawks_RR extends LinearOpMode {
         }
     }
 
-    public void Hanging(double sliderSpeed, int initialPositionForeArmMotor, int initialPosition1, int initialPosition){
+    public void Hanging(double armSpeed, double sliderSpeed, int initialPositionForeArmMotor, int sliderInitialPosition) {
         telemetry.addData("starting Pos.", SliderMotor.getCurrentPosition());
         telemetry.addData("Initial Pos", initialPositionForeArmMotor);
 
-        SliderMotor.setTargetPosition(initialPosition1 + 5200);
+        SliderMotor.setTargetPosition(sliderInitialPosition + 4500);
         SliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         SliderMotor.setPower(sliderSpeed);
 
-        telemetry.addData("LeftSlider Target",SliderMotor.getTargetPosition());
-        telemetry.update();
-        while(SliderMotor.isBusy()){
 
-        }
-        manoState= ManoState.MANO_HANGING;
-    }
-    public void AimForPixels(double armSpeed, int initialPositionForeArmMotor){
-        telemetry.addData("Current Pos.", ArmRotator.getCurrentPosition());
-        telemetry.addData("TargetPosition", ArmRotator.getTargetPosition());
-        telemetry.update();
-        ArmRotator.setTargetPosition(initialPositionForeArmMotor);
+        ArmRotator.setTargetPosition(initialPositionForeArmMotor + 6500);
         ArmRotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         ArmRotator.setPower(armSpeed);
-        while(ArmRotator.isBusy()){
+        while (ArmRotator.isBusy()) {
             telemetry.addData("Current Pos.", ArmRotator.getCurrentPosition());
             telemetry.addData("TargetPosition", ArmRotator.getTargetPosition());
             telemetry.update();
+            if (gamepad1.ps) {
+                ArmRotator.setPower(0.0);
+
+            }
+            idle();
+
+            manoState = ManoState.MANO_HANGING;
+        }
+    }
+    public void AimForPixels(double armSpeed, int initialPositionForeArmMotor, double sliderSpeed, int sliderInitialPosition){
+        //Cross
+        SliderMotor.setTargetPosition(sliderInitialPosition);
+        SliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        SliderMotor.setPower(sliderSpeed);
+            if(gamepad1.ps){
+                SliderMotor.setPower(0.0);
+
+            }
+            idle();
+        ArmRotator.setTargetPosition(initialPositionForeArmMotor);
+        ArmRotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        ArmRotator.setPower(armSpeed);
             if(gamepad1.ps){
                 ArmRotator.setPower(0.0);
-                break;
+
             }
-        }
+
+
 
         Wrist.setPosition(0.45);
         RServo.setPosition(0.5);
@@ -243,17 +297,20 @@ public class MightyHawks_RR extends LinearOpMode {
         ArmRotator.setTargetPosition(initialPositionForeArmMotor + scoringPosition);
         ArmRotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         ArmRotator.setPower(armSpeed);
-        while(ArmRotator.isBusy()){
-            telemetry.addData("Current Pos.", ArmRotator.getCurrentPosition());
-            telemetry.addData("TargetPosition", ArmRotator.getTargetPosition());
-            telemetry.update();
             if(gamepad1.ps){
                 ArmRotator.setPower(0.0);
-                break;
             }
-        }
-        Wrist.setPosition(0.75);
-        //SlidersUpToScore(sliderSpeed, sliderInitialPosition, sliderTargetPosition);
+            idle();
+
+
+        SliderMotor.setTargetPosition(sliderInitialPosition + sliderTargetPosition);
+        SliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        SliderMotor.setPower(sliderSpeed);
+            if(gamepad1.ps){
+                SliderMotor.setPower(0.0);
+            }
+
+        Wrist.setPosition(0.0);
 
     }
 

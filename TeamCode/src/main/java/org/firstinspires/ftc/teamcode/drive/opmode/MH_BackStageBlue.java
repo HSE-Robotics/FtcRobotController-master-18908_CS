@@ -73,6 +73,7 @@ import java.util.List;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
+@Disabled
 @Autonomous(name = "Blue Back Stage", group = "Concept")
 
 public class MH_BackStageBlue extends LinearOpMode {
@@ -130,12 +131,12 @@ public class MH_BackStageBlue extends LinearOpMode {
         FR = hardwareMap.get(DcMotor.class, "FR");
         FL = hardwareMap.get(DcMotor.class, "FL");
         BL = hardwareMap.get(DcMotor.class, "BL");
-        ArmMotor = hardwareMap.get(DcMotor.class, "ArmMotor");
+        ArmMotor = hardwareMap.get(DcMotor.class, "ArmRotator");
         RightServo = hardwareMap.get(CRServo.class, "leftTire");
         LeftServo = hardwareMap.get(CRServo.class, "rightTire");
         ArmServo = hardwareMap.get(Servo.class, "Wrist");
-        leftSlider = hardwareMap.get(DcMotor.class,"leftSlider");
-        Rightslider = hardwareMap.get(DcMotor.class, "Rightslider");
+        leftSlider = hardwareMap.get(DcMotor.class,"SliderMotor");
+        //Rightslider = hardwareMap.get(DcMotor.class, "Rightslider");
 
         // Wait for the DS start button to be touched.
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
