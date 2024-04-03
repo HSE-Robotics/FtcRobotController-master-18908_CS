@@ -350,7 +350,8 @@ public class MightyHawks_RR extends LinearOpMode {
         }
 
 
-    } public void SlidersUpToScore(double sliderSpeed, int sliderInitialPosition, int sliderTargetPosition){
+    }
+    public void SlidersUpToScore(double sliderSpeed, int sliderInitialPosition, int sliderTargetPosition){
         telemetry.addData("starting Pos.", SliderMotor.getCurrentPosition());
 
         SliderMotor.setTargetPosition(sliderInitialPosition + sliderTargetPosition);

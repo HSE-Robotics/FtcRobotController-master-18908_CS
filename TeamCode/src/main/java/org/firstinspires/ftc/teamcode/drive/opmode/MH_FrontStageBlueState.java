@@ -46,6 +46,7 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
+import java.util.Vector;
 
 /*
  * This OpMode illustrates the basics of TensorFlow Object Detection,
@@ -250,7 +251,7 @@ public class MH_FrontStageBlueState extends LinearOpMode {
         ticks_per_inch = ticks_per_revolution / wheel_circumference;
         distance_to_travel = 60;
         ticks_to_destination = (int) (distance_to_travel * ticks_per_inch);
-        speed = 0.25;
+        speed = 0.10;
         boolean objDetected = false;
         List<Recognition> currentRecognitions = tfod.getRecognitions();
         telemetry.addData("# Objects Detected", currentRecognitions.size());
@@ -316,13 +317,17 @@ public class MH_FrontStageBlueState extends LinearOpMode {
                     x_score = 35.50;
                     y_score = 42.00;
 
-                    TrajectorySequence PurplePixelCenter = drive.trajectorySequenceBuilder(new Pose2d(12.00, 62.00, Math.toRadians(270.00)))
+                    TrajectorySequence PurplePixelCenter = drive.trajectorySequenceBuilder(new Pose2d(12.00, 61.00, Math.toRadians(270.00)))
                             .lineTo(new Vector2d(12.00, 34.00))
                             .addDisplacementMarker(() -> {
                                 RServo.setPosition(0.25);
+                                Wrist.setPosition(1);
                             })
-                            .lineTo(new Vector2d(12.00, 45.00))
-                            .lineToLinearHeading(new Pose2d(36.00, 42.00, Math.toRadians(0.00)))
+                            .lineTo(new Vector2d(12.00, 55.00))
+                            //.waitSeconds(10)
+                            .lineTo(new Vector2d(70.00, 55.00))
+                            //.lineToLinearHeading(new Pose2d(90.00,38.00,Math.toRadians(0.00)))
+                            .splineToSplineHeading(new Pose2d(90.00, 55.00, Math.toRadians(90)), Math.toRadians(0))
                             .build();
                     drive.setPoseEstimate(PurplePixelCenter.start());
                     drive.followTrajectorySequence(PurplePixelCenter);
