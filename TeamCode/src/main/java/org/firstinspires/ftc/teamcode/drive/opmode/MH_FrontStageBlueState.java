@@ -318,16 +318,17 @@ public class MH_FrontStageBlueState extends LinearOpMode {
                     y_score = 42.00;
 
                     TrajectorySequence PurplePixelCenter = drive.trajectorySequenceBuilder(new Pose2d(12.00, 61.00, Math.toRadians(270.00)))
-                            .lineTo(new Vector2d(12.00, 34.00))
+                            .lineToLinearHeading(new Pose2d(12.00, 34.00, Math.toRadians(270.00)))
                             .addDisplacementMarker(() -> {
                                 RServo.setPosition(0.25);
                                 Wrist.setPosition(1);
                             })
-                            .lineTo(new Vector2d(12.00, 55.00))
-                            //.waitSeconds(10)
-                            .lineTo(new Vector2d(70.00, 55.00))
+                            .lineToLinearHeading(new Pose2d(12.00, 55.00, Math.toRadians(270.00)))
+                            .waitSeconds(3)
+                            .lineToLinearHeading(new Pose2d(70.00, 55.00, Math.toRadians(270.00)))
+                            .waitSeconds(0.5)
                             //.lineToLinearHeading(new Pose2d(90.00,38.00,Math.toRadians(0.00)))
-                            .splineToSplineHeading(new Pose2d(90.00, 55.00, Math.toRadians(90)), Math.toRadians(0))
+                            .splineToSplineHeading(new Pose2d(90.00, 55.00, Math.toRadians(0.00)), Math.toRadians(90.00))
                             .build();
                     drive.setPoseEstimate(PurplePixelCenter.start());
                     drive.followTrajectorySequence(PurplePixelCenter);

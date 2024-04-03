@@ -80,7 +80,7 @@ publishing {
 
     repositories {
         maven {
-            url = uri("$buildDir/repository")
+            url = uri("buildDir/repository")
         }
     }
 }
@@ -92,4 +92,13 @@ compileKotlin.kotlinOptions {
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
     jvmTarget = "1.8"
+}
+
+repositories {
+    maven { url = 'https://jitpack.io' }
+    maven { url = 'https://maven.brott.dev/' }
+}
+
+dependencies {
+    implementation 'com.github.NoahBres:MeepMeep:2.0.3'
 }
