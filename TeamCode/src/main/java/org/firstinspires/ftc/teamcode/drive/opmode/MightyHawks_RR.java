@@ -116,7 +116,7 @@ public class MightyHawks_RR extends LinearOpMode {
 
 
                 if (gamepad1.options) {
-                    drone_launcher.setPosition(1.0);
+                    drone_launcher.setPosition(0.0);
                 }
                 if (gamepad1.share) {
                     initialPositionForeArmMotor = ArmRotator.getCurrentPosition();
